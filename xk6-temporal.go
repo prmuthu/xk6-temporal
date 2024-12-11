@@ -45,16 +45,9 @@ func (temporal *ModuleInstance) Exports() modules.Exports {
 }
 
 // NewClient returns a new Temporal Client.
-func (m *ModuleInstance) NewClient(options client.Options) (*client.Client, error) {
+func (m *ModuleInstance) NewClient(options client.TemporalOptions) (*client.Client, error) {
 	if options.HostPort == "" {
 		options.HostPort = os.Getenv("TEMPORAL_GRPC_ENDPOINT")
 	}
-	options.MetricsHandler = metrics.NewClientMetricsHandler(
-		m.vu.Context(),
-		m.vu.State().Samples,
-		m.vu.State().Tags.GetCurrentValues(),
-		m.customMetrics,
-	)
-
 	return client.NewClient(options)
 }

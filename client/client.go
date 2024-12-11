@@ -1,13 +1,13 @@
 package client
 
 import (
-	"context"
+	"context" // Add this line
+	"crypto/tls"
+	"log"
 	"time"
 
 	"go.temporal.io/api/workflowservice/v1"
 	sdkclient "go.temporal.io/sdk/client"
-
-	"github.com/temporalio/xk6-temporal/logger"
 )
 
 // Client is the exported module instance.
@@ -24,16 +24,39 @@ type WorkflowHandle struct {
 	RunID  string
 }
 
-func NewClient(options Options) (*Client, error) {
-	// Not sure what to do with these logs, they may be useful.
-	options.Logger = logger.NewNopLogger()
+type TemporalOptions struct {
+	Options
+	Certpath string
+	Keypath  string
+}
 
-	c, err := sdkclient.Dial(options)
+func NewClient(options TemporalOptions) (*Client, error) {
+	var cert *tls.Certificate
+	myCert, err := tls.LoadX509KeyPair(options.Certpath, options.Keypath)
+	if err != nil {
+		log.Fatal("Failed to load client certificate: ", err)
+	}
+	cert = &myCert
+	namespace := options.Namespace
+	hostport := options.HostPort
+
+	c, err := sdkclient.Dial(sdkclient.Options{
+		Namespace: namespace,
+		HostPort:  hostport,
+
+		ConnectionOptions: sdkclient.ConnectionOptions{
+			TLS: &tls.Config{
+				Certificates: []tls.Certificate{*cert},
+			},
+		},
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
 	return &Client{sdkClient: c}, nil
+
 }
 
 func (r WorkflowHandle) Result() (interface{}, error) {
@@ -109,7 +132,7 @@ func (c *Client) SignalWithStartWorkflow(workflowID string, signalName string, s
 		workflowType,
 		workflowArgs...,
 	)
-
+    
 	if err != nil {
 		return WorkflowHandle{}, err
 	}

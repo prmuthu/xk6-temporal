@@ -5,8 +5,8 @@ import (
 
 	"go.k6.io/k6/js/modules"
 
-	"github.com/temporalio/xk6-temporal/client"
-	"github.com/temporalio/xk6-temporal/metrics"
+	"github.com/prmuthu/xk6-temporal/client"
+	"github.com/prmuthu/xk6-temporal/metrics"
 )
 
 func init() {

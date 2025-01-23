@@ -1,4 +1,4 @@
-FROM golang:1.18 AS builder
+FROM golang:1.22.7 AS builder
 
 WORKDIR /usr/src/k6
 
@@ -9,9 +9,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 RUN xk6 build --output /usr/local/bin/k6 \
-    --with github.com/grafana/xk6-output-prometheus-remote \
-    --with github.com/temporalio/xk6-prometheus-client \
-    --with github.com/temporalio/xk6-temporal=.
+--with github.com/prmuthu/xk6-temporal@v0.1.0=.
 
 FROM alpine:3.16
 

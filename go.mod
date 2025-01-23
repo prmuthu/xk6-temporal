@@ -1,11 +1,11 @@
-module github.com/temporalio/xk6-temporal
+module github.com/prmuthu/xk6-temporal
 
 go 1.18
 
 require (
 	go.k6.io/k6 v0.49.0
 	go.temporal.io/api v1.8.1-0.20220603192404-e65836719706
-	go.temporal.io/sdk v1.15.0
+	go.temporal.io/sdk v1.15.0	
 )
 
 require (
